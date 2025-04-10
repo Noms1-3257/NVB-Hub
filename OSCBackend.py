@@ -41,7 +41,7 @@ class OSC_Backend:
         
 
     def _Device_Handler(self):
-        print("DEVICE STARTED\n")
+        
         
         from Bp_Utils import Device # Init device stuff
 
@@ -94,7 +94,7 @@ class OSC_Backend:
 
                 
     def _OSC_Handler(self):
-        print("OSC STARTED\n")
+        
 
         from pythonosc import dispatcher
 
@@ -115,7 +115,7 @@ class OSC_Backend:
         
 
     def _OSC_Vibrate_Dispatch(self, address, *args):
-        print(args)
+        
         self.Vibration_Intensity = args
 
 

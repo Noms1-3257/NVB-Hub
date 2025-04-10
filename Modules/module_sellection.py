@@ -11,13 +11,15 @@ class Module:
 
         #The Manual One
         from Modules.bp_manual import Module as MANUAL_MODULE
+        from Modules.manualv2 import Module as MANUALV2_MODULE
         Manual_Module = _Module("Manual",MANUAL_MODULE())
+        ManualV2_Module = _Module("ManualV2",MANUALV2_MODULE())
         Empty_Module = _Module("Nothing Burger\n(This Will Crash)", 1)
 
         #Add more
         
         
-        self.Modules = [Manual_Module,Empty_Module]
+        self.Modules = [Manual_Module,Empty_Module,ManualV2_Module]
         self.Selected = None
         self.Update_Vars = []
         self.Background_Color = [50,50,50]
