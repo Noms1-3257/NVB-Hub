@@ -14,12 +14,12 @@ class Module:
         from Modules.manualv2 import Module as MANUALV2_MODULE
         Manual_Module = _Module("Manual",MANUAL_MODULE())
         ManualV2_Module = _Module("ManualV2",MANUALV2_MODULE())
-        Empty_Module = _Module("Nothing Burger\n(This Will Crash)", 1)
+
 
         #Add more
         
         
-        self.Modules = [Manual_Module,Empty_Module,ManualV2_Module]
+        self.Modules = [Manual_Module,ManualV2_Module]
         self.Selected = None
         self.Update_Vars = []
         self.Background_Color = [50,50,50]
@@ -73,6 +73,9 @@ class Module:
                     pygame.draw.line(Surface, (200,30,20), (0,Line_Y_Pos),(Width,Line_Y_Pos),3)
                     
                     i+=1
+
+                Text_Surface = Text_Font.render("Sellect Module", True, self.Text_Color)
+                Surface.blit(Text_Surface, [0, 0])
 
                 self.Surface = Surface
                 

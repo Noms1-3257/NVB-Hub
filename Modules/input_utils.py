@@ -89,25 +89,55 @@ class _Slider:
 
                 Indicator_X = Pos[0] + (BackGround_Rect[2]*self.Value)
 
-                return BackGround_Rect, [Indicator_X,Indicator_Y], Indicator_Size
+                
+            elif self.Vertical:
+
+                Indicator_Y =  Pos[1] + (BackGround_Rect[3]* (1 - self.Value))
+
+                Indicator_X = Pos[0] + (Size[0]/2)
+            print("SLIDER DRAWING")
+            print(BackGround_Rect, [Indicator_X,Indicator_Y], Indicator_Size)
+
+            return BackGround_Rect, [Indicator_X,Indicator_Y], Indicator_Size
+
+                
 
     def Change_On_Mouse(self, Mouse):
 
-        MouseX = Mouse.Pos[0]
+        if not self.Vertical: # If the slider is side to side
+            MouseX = Mouse.Pos[0]
 
-        Slider_Min = self.Visual_rect[0]
-        Slider_Max = Slider_Min+self.Visual_rect[2]
+            Slider_Min = self.Visual_rect[0]
+            Slider_Max = Slider_Min+self.Visual_rect[2]
 
-        if MouseX < Slider_Min:
+            if MouseX < Slider_Min:
 
-            self.Value = 0
+                self.Value = 0
 
-        elif MouseX > Slider_Max:
+            elif MouseX > Slider_Max:
 
-            self.Value = 1
+                self.Value = 1
 
-        else:
-            self.Value = (MouseX-Slider_Min)/(Slider_Max-Slider_Min)
+            else:
+                self.Value = (MouseX-Slider_Min)/(Slider_Max-Slider_Min)
+
+        elif self.Vertical: # if slider is up or down
+
+            MouseY = Mouse.Pos[1]
+
+            Slider_Min = self.Visual_rect[1]
+            Slider_Max = Slider_Min+self.Visual_rect[3]
+
+            if MouseY < Slider_Min:
+
+                self.Value = 1
+
+            elif MouseY > Slider_Max:
+
+                self.Value = 0
+
+            else:
+                self.Value = 1 - (MouseY-Slider_Min)/(Slider_Max-Slider_Min)
 
                 
 
@@ -221,17 +251,25 @@ class Inputs:
                 pygame.draw.rect(self.Surface, Button.Back_Color, Background)
                 pygame.draw.rect(self.Surface, Button.Color(), Indicator)
 
-            for Slider in self.Sliders:
+            for _Slider in self.Sliders:
 
-                rect, ind_pos, ind_size = Slider.Draw(Width, Height)
+                rect, ind_pos, ind_size = _Slider.Draw(Width, Height)
 
-                pygame.draw.rect(self.Surface, Slider.Background_Color, rect)
+                pygame.draw.rect(self.Surface, _Slider.Background_Color, rect)
 
-                pygame.draw.circle(self.Surface, Slider.Background_Color, [rect[0],ind_pos[1]], ind_size, 0)
+                if not _Slider.Vertical:
 
-                pygame.draw.circle(self.Surface, Slider.Background_Color, [rect[0]+rect[2],ind_pos[1]], ind_size, 0)
-                
-                pygame.draw.circle(self.Surface, Slider.Indicator_Color, ind_pos, ind_size, 0)
+                    pygame.draw.circle(self.Surface, _Slider.Background_Color, [rect[0],ind_pos[1]], ind_size, 0)
+
+                    pygame.draw.circle(self.Surface, _Slider.Background_Color, [rect[0]+rect[2],ind_pos[1]], ind_size, 0)
+
+                elif Slider.Vertical:
+
+                    pygame.draw.circle(self.Surface, _Slider.Background_Color, [ind_pos[0],rect[1]], ind_size, 0)
+
+                    pygame.draw.circle(self.Surface, _Slider.Background_Color, [ind_pos[0],rect[1]+rect[3]], ind_size, 0)
+
+                pygame.draw.circle(self.Surface, _Slider.Indicator_Color, ind_pos, ind_size, 0)
 
 
             
@@ -269,7 +307,7 @@ if __name__ == "__main__":
 
     #Button = Module_Inputs.Create_Button([50,50], [50,50], Ratio_Driven_Position = False)
     Button = Module_Inputs.Create_Button([0.25,0.25], [0.1,0.1], Ratio_Driven_Position = True)
-    Slider = Module_Inputs.Create_Slider([0.3,0.5], [0.25,0.05], Ratio_Driven_Position = True)
+    Slider = Module_Inputs.Create_Slider([0.3,0.5], [0.05,0.25], Ratio_Driven_Position = True, Vertical = True)
 
 
     while True:

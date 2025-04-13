@@ -30,12 +30,23 @@ class Module:
 
         self.Surface = None
 
-        self.Slider = self.Inputs.Create_Slider([0.25,0.5], [0.5,0.05], Ratio_Driven_Position = True)
+        self.Slider = self.Inputs.Create_Slider([0.4,0.25], [0.2,0.5], Ratio_Driven_Position = True, Vertical = True)
+
+        self.Update_Vars = []
 
     def Draw(self, Width, Height):
 
+        Update_Vars = [Width, Height]
 
-        if self.Inputs.Surface_Update:
+        redraw = False
+
+        if not self.Update_Vars == Update_Vars:
+            redraw = True
+            self.Update_Vars = Update_Vars
+            
+
+
+        if self.Inputs.Surface_Update or redraw:
 
             Surface = pygame.Surface((Width, Height)) # Make Surface to draw on
 
@@ -92,7 +103,7 @@ if __name__ == "__main__":
                 width, height = event.w, event.h
                 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
-
+        screen.fill((49,49,49))
         screen.blit(Manual_Controller.Draw(width, height),[0,0])
 
         Manual_Controller.Input(pygame.mouse.get_pos(),pygame.mouse.get_pressed())
