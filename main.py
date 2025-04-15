@@ -2,7 +2,7 @@ import pygame
 import sys
 import threading
 from mouse_iterator import Mouse_Iterator
-import OSC_Module
+import OSC_ModuleV2 as OSC_Module
 
 # Pygame Stuff Init
 pygame.init()
@@ -37,7 +37,7 @@ class _App:
     def __init__(self):
         self.Running = True
         self.Base_Color = [30,30,30]
-        self.FPS = 30
+        self.FPS = 60
         self.Window_Size = [30,30]
         self.Mouse = Mouse_Iterator()
         self.OSC_Module = OSC_Module.Module()

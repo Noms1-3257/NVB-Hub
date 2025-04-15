@@ -57,9 +57,11 @@ class OSC_Backend:
                     
                     if not self._Cur_Vibration == self.Vibration_Intensity:
 
-                        self._Cur_Vibration = copy.deepcopy(self.Vibration_Intensity) # Check curent vibration state, dont wanna spam the same thing
+                        self._Cur_Vibration = self.Vibration_Intensity # Check curent vibration state, dont wanna spam the same thing
 
                         self.Device.Send(f"{self.Vibration_Intensity[0]},{self.Vibration_Intensity[0]}|")
+
+                        time.sleep(0.01)
 
                 else:  # Else we not be connected, we need to get on that
 

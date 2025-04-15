@@ -3,7 +3,7 @@ import pygame
 
 # Data Objects For Inputs
 class _Button:
-    def __init__(self, Pos = [0,0], Size = [20,10], Name = "Button", Indicator_Ratio = 0.1, On_Color = [5,244,5], Off_Color = [244,5,5], Back_Color = [90,90,90], Ratio_Driven_Position = False):
+    def __init__(self, Pos = [0,0], Size = [20,10], Name = "Button", Indicator_Ratio = 0.1, On_Color = [5,244,5], Off_Color = [244,5,5], Back_Color = [90,90,90], Ratio_Driven_Position = False, Visibility = True):
         self.Pos = Pos
         self.Size = Size
         self.Name = Name
@@ -14,9 +14,12 @@ class _Button:
         self.Indicator_Ratio = Indicator_Ratio
         self.Ratio_Driven_Position = Ratio_Driven_Position
         self.Visual_rect = [0,0,1,1]
+        self.Visibility = Visibility
+        self.Fresh_Change = False
 
     def Toggle(self):
         self.Value = not self.Value
+        
 
     def Color(self):
         if self.Value:
@@ -25,11 +28,12 @@ class _Button:
             return self.Off_Color
 
     def Draw(self, Width, Height):
+        
 
         if self.Ratio_Driven_Position:
             Pos = [Width*self.Pos[0], Height*self.Pos[1]]
             
-            Size = [min(Width, Height) * self.Size[0], min(Width, Height)* self.Size[1]]
+            Size = [Width * self.Size[0],Height* self.Size[1]]
 
             BackGround_Rect = [Pos[0] ,Pos[1] ,Size[0] ,Size[1]]
 
@@ -39,7 +43,10 @@ class _Button:
 
             self.Visual_rect = BackGround_Rect
 
-            return BackGround_Rect, Indicator_Rect
+            if not self.Visibility:
+                return None
+
+            return [BackGround_Rect, Indicator_Rect]
 
         else:
 
@@ -51,7 +58,10 @@ class _Button:
 
             self.Visual_rect = BackGround_Rect
 
-            return BackGround_Rect, Indicator_Rect
+            if not self.Visibility:
+                return None
+
+            return [BackGround_Rect, Indicator_Rect]
 
         
         
@@ -190,8 +200,11 @@ class Inputs:
             if not self.Sellected:
                 
                 for Button in self.Buttons:
+
+                    
                     
                     if Check_Mouse_In_Visual(Mouse, Button):
+
                         
                         Button.Toggle()
 
@@ -244,10 +257,16 @@ class Inputs:
         
             for Button in self.Buttons: # Button Drawing to Surface
                 #Draw Button Backing
-                Background, Indicator = Button.Draw(Width, Height)
 
-                pygame.draw.rect(self.Surface, Button.Back_Color, Background)
-                pygame.draw.rect(self.Surface, Button.Color(), Indicator)
+                Button_Draw_Result = Button.Draw(Width, Height)
+
+                if not Button_Draw_Result == None:
+                    
+                    Background = Button_Draw_Result[0]
+                    Indicator = Button_Draw_Result[1]
+
+                    pygame.draw.rect(self.Surface, Button.Back_Color, Background)
+                    pygame.draw.rect(self.Surface, Button.Color(), Indicator)
 
             for Slider in self.Sliders:
 
