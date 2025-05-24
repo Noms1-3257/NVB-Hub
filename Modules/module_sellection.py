@@ -10,20 +10,24 @@ class Module:
     def __init__(self):
 
         #The Manual One
-        from Modules.bp_manual import Module as MANUAL_MODULE
         from Modules.manualv2 import Module as MANUALV2_MODULE
-        Manual_Module = _Module("Manual",MANUAL_MODULE())
-        ManualV2_Module = _Module("ManualV2",MANUALV2_MODULE())
+        from Modules.vrc_orph_module import Module as VRC_ORPH_MODULE
+        from Modules.vrc_pen_module import Module as VRC_PEN_MODULE
+        from Modules.RmCt.RmCt_Module import Module as RMCT_MODULE
+        ManualV2_Module = _Module("Manual",MANUALV2_MODULE())
+        vrc_Orph_Module = _Module("VRChat Orph", VRC_ORPH_MODULE())
+        vrc_Pen_Module = _Module("VRChat Pen", VRC_PEN_MODULE())
+        rmct_module = _Module("RmCt", RMCT_MODULE())
 
 
         #Add more
         
         
-        self.Modules = [Manual_Module,ManualV2_Module]
+        self.Modules = [ManualV2_Module, vrc_Orph_Module, vrc_Pen_Module, rmct_module]
         self.Selected = None
         self.Update_Vars = []
         self.Background_Color = [50,50,50]
-        self.Text_Color = [100,200,150]
+        self.Text_Color = [200,200,200]
         self.Text_Dist_From_Edge = 0.15
         self.Text_Scale_Value = 0.15
         self.Surface = None
@@ -87,7 +91,7 @@ class Module:
         
             
 
-    def Update(self, Mouse):
+    def Update(self, Mouse, Keyboard):
 
         if self.Selected:
 
@@ -96,7 +100,7 @@ class Module:
                     self.Selected = None
                     return
 
-            self.Selected.Class.Update(Mouse)
+            self.Selected.Class.Update(Mouse, Keyboard)
 
         else:
 

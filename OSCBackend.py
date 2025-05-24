@@ -18,6 +18,8 @@ class OSC_Backend:
 
         self.Searching = False
 
+        self.Connected = False
+
         self.Kill_Threads = False
 
         
@@ -53,6 +55,8 @@ class OSC_Backend:
 
                 if self.Device.Connected:
 
+                    
+
                     self.Searching = False # We already connected
                     
                     if not self._Cur_Vibration == self.Vibration_Intensity:
@@ -71,15 +75,23 @@ class OSC_Backend:
 
                     if self.Device.Connected: # We just connected, make sure it knows what were doing
 
+                        self.Connected = True
+
                         self.Device.Send(f"{self.Vibration_Intensity[0]},{self.Vibration_Intensity[0]}|")
+
+                        time.sleep(0.01)
 
             else: # We dont need to be connected, fuk that
 
                 if self.Device.Connected:
 
+                    self.Connected = False
+
                     self.Device.Disconnect()
 
                 else:
+
+                    self.Connected = False
 
                     self.Searching = False
 
@@ -89,6 +101,8 @@ class OSC_Backend:
                 self.Device.Disconnect()
                 self.Searching = False
                 return
+
+        time.sleep(0.02)
 
                     
 

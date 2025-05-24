@@ -104,6 +104,7 @@ class Device:
                 try:
                     if len(self.Send_Buffer) > 0:
                         data = self.Send_Buffer[::-1][0]
+                        print("[Bp_Utils] - Sending {data}")
                         await client.write_gatt_char(NUS_RX_CHAR_UUID, data.encode("utf-8"))
                         for data in self.Send_Buffer:
                             del self.Send_Buffer[0]

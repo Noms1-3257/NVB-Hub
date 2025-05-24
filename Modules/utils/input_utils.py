@@ -1,5 +1,5 @@
 import pygame
-import copy
+
 
 # Data Objects For Inputs
 class _Button:
@@ -8,7 +8,6 @@ class _Button:
         self.Size = Size
         self.Name = Name
         self.Value = False
-        self.Interactable = True
         self.On_Color = On_Color
         self.Off_Color = Off_Color
         self.Back_Color = Back_Color
@@ -17,9 +16,6 @@ class _Button:
         self.Visual_rect = [0,0,1,1]
         self.Visibility = Visibility
         self.Fresh_Change = False
-        
-
-        self.Type = "Button"
 
     def Toggle(self):
         self.Value = not self.Value
@@ -82,7 +78,6 @@ class _Slider:
 
         self.Indicator_Color = Indicator_Color
         self.Background_Color = Background_Color
-        self.Type = "Slider"
 
     def Draw(self, Width, Height):
 
@@ -155,72 +150,7 @@ class _Slider:
                 
 
                 
-class _TextPrompt:
-    def __init__(self, Pos = [0,0], Size = [0,0], Limit = 99999999, Name = "TextBox", Ratio_Driven_Position = False, CenterText = False):
-        self.Pos = Pos
-        self.Size = Size
-        self.Name = Name
-        self.Ratio_Driven_Position = Ratio_Driven_Position
 
-        self.Visual_rect = [0,0,1,1]
-
-        self.CenterText = CenterText
-
-        self.Interactable = True
-
-        self.Sellected= False # if we need to draw the sellected indicator
-        self.Sellected_Color = [80,80,255]
-        self.SellectIndSize = 0.1
-        
-        self.Text_Scale_Value = 0.18
-        self.Text = ""
-        self.Text_Color = [225,225,225]
-
-        self.Type = "TextPrompt"
-        self.Limit = Limit
-
-        self.Background_Color = [50,50,50]
-
-    def Draw(self, Width, Height):
-
-        if self.Ratio_Driven_Position:
-
-            # create the surface
-            
-            Surface = pygame.Surface((Width, Height))
-
-            # render the text to a surface
-
-            Text_Font = pygame.font.Font(None, round(min(Height,Width)*self.Text_Scale_Value))
-
-            Text_Surface = Text_Font.render(self.Text, True, self.Text_Color)
-
-            # render the background color
-
-            Pos = [self.Pos[0] * Width, self.Pos[1] * Height]
-
-            Size = [self.Size[0] * Width, self.Size[1] * Height]
-
-            self.Visual_rect = [Pos[0],Pos[1],Size[0],Size[1]]
-
-            X_Offset_Indicator = (self.SellectIndSize*Size[0])
-            Y_Offset_Indicator = (self.SellectIndSize*Size[1])
-
-            Offset_Indicator = min(X_Offset_Indicator, Y_Offset_Indicator)
-
-            Sellecion_Rect = [Pos[0]+Offset_Indicator,Pos[1]+Offset_Indicator,Size[0]-(Offset_Indicator*2),Size[1]-(Offset_Indicator*2)]
-
-            return self.Visual_rect, Text_Surface, Pos, self.Sellected, Sellecion_Rect
-
-            
-            # NEED TO CONTINUE WORK ON THIS
-            
-
-            
-
-            
-
-            
             
 
             
@@ -254,9 +184,6 @@ class Inputs:
     def __init__(self):
         self.Sliders = []
         self.Buttons = []
-        self.TextPrompts = []
-
-        self.MasterUpdateList = []
 
         self.Sellected = None
 
@@ -266,9 +193,7 @@ class Inputs:
         self.Surface_Update = True
         self.Fresh_Draw = True
 
-        
-
-    def Update(self, Mouse, Keyboard): # main update for stuff
+    def Update(self, Mouse): # main update for stuff
 
         if Mouse.Pressed[0]:
             
@@ -278,7 +203,7 @@ class Inputs:
 
                     
                     
-                    if Button.Interactable and Check_Mouse_In_Visual(Mouse, Button):
+                    if Check_Mouse_In_Visual(Mouse, Button):
 
                         
                         Button.Toggle()
@@ -292,79 +217,16 @@ class Inputs:
                         self.Sellected = Slider
 
                         self.Surface_Update = True
-                # Try to sellect a text prompt
-                for TextPrompt in self.TextPrompts:
 
-                    if TextPrompt.Interactable and Check_Mouse_In_Visual(Mouse, TextPrompt):
+        if Mouse.Held[0] and self.Sellected:
 
-                        self.Sellected = TextPrompt
+            self.Sellected.Change_On_Mouse(Mouse)
 
-                        self.Sellected.Sellected = True
+            self.Surface_Update = True
 
-                        self.Surface_Update = True
+        elif not Mouse.Held[0] and self.Sellected:
 
-                    
-        if self.Sellected:
-            # if a slider is sellected
-            # act on the slider and check if we let go
-            if self.Sellected.Type == "Slider":
-                
-                if Mouse.Held[0] and self.Sellected:
-
-                    self.Sellected.Change_On_Mouse(Mouse)
-
-                    self.Surface_Update = True
-
-                elif not Mouse.Held[0] and self.Sellected:
-
-                    self.Sellected = None
-
-            # if a text prompt is sellected
-            elif self.Sellected.Type == "TextPrompt":
-
-                # handle unsellect by clicking off
-
-                if Mouse.Pressed[0] or Keyboard.Enter:
-
-                    if not Check_Mouse_In_Visual(Mouse, self.Sellected) or Keyboard.Enter:
-
-                        self.Sellected.Sellected = False
-
-                        self.Sellected = None
-
-                        self.Surface_Update = True
-
-                        
-
-                # handle typing in the text box
-
-                else:
-
-                    for Key in Keyboard.Pressed:
-                        
-
-                        if not len(Key) > 1:
-
-                            if len(self.Sellected.Text) < self.Sellected.Limit:
-
-                                self.Sellected.Text = self.Sellected.Text + str(Key)
-
-                                self.Surface_Update = True
-
-                        
-
-                        elif Key == "Backspace":
-
-                            
-                            String = str(self.Sellected.Text)
-
-                            self.Sellected.Text = String[:-1]
-
-                            self.Surface_Update = True
-
-                
-
-            
+            self.Sellected = None
 
                         
 
@@ -377,9 +239,7 @@ class Inputs:
 
     def Draw(self, Width, Height): # Draw everything to a surface
 
-        Update_Vars = [Width, Height, copy.deepcopy(self.MasterUpdateList)]
-
-                
+        Update_Vars = [Width, Height]
 
         if not self.Update_Vars == Update_Vars:
             self.Surface_Update = True
@@ -391,7 +251,7 @@ class Inputs:
             self.Fresh_Draw = True
 
             self.Surface = pygame.Surface.convert_alpha( pygame.Surface((Width, Height)) ) # set surface
-            self.Surface.fill([0,0,0,0])
+
             # Do not fill, this is just a overlay
 
         
@@ -408,19 +268,18 @@ class Inputs:
                     pygame.draw.rect(self.Surface, Button.Back_Color, Background)
                     pygame.draw.rect(self.Surface, Button.Color(), Indicator)
 
-            # slider drawing
             for Slider in self.Sliders:
 
                 rect, ind_pos, ind_size = Slider.Draw(Width, Height)
 
                 pygame.draw.rect(self.Surface, Slider.Background_Color, rect)
-                # horrizontal sliders
+
                 if not Slider.Vertical:
 
                     pygame.draw.circle(self.Surface, Slider.Background_Color, [rect[0],ind_pos[1]], ind_size, 0)
 
                     pygame.draw.circle(self.Surface, Slider.Background_Color, [rect[0]+rect[2],ind_pos[1]], ind_size, 0)
-                # vertical sliders
+
                 elif Slider.Vertical:
 
                     pygame.draw.circle(self.Surface, Slider.Background_Color, [ind_pos[0],rect[1]], ind_size, 0)
@@ -429,46 +288,11 @@ class Inputs:
 
                 pygame.draw.circle(self.Surface, Slider.Indicator_Color, ind_pos, ind_size, 0)
 
-            # Draw Text prompts
-            for TextPrompt in self.TextPrompts:
-                
-
-                Rect, TextSurface, TextPos, SellectFlag, Sellecion_Rect = TextPrompt.Draw(Width, Height)
-
-                if SellectFlag:
-
-                    pygame.draw.rect(self.Surface, TextPrompt.Sellected_Color, Rect)
-
-                    pygame.draw.rect(self.Surface, TextPrompt.Background_Color, Sellecion_Rect)
-
-                else:
-
-                    pygame.draw.rect(self.Surface, TextPrompt.Background_Color, Rect)
-
-
-                # Draw the text
-
-                if not TextPrompt.CenterText:
-
-                    self.Surface.blit(TextSurface, TextPos)
-
-                else:
-
-                    CenterPos = [Rect[0]+(Rect[2]/2), Rect[1]+(Rect[3]/2)]
-
-                    text_rect = TextSurface.get_rect(center=CenterPos)
-
-                    self.Surface.blit(TextSurface, text_rect)
-                
-                
-                
-
-                
 
             
         self.Surface_Update = False
 
-
+        self.Surface.set_colorkey((0, 0, 0))
         
         return self.Surface
 
@@ -476,20 +300,14 @@ class Inputs:
     def Create_Slider(self, Pos = [0,0], Size = [20,10], Name = "Slider", Ratio_Driven_Position = False, Vertical = False):
         New_Slider = _Slider(Pos, Size, Name, Ratio_Driven_Position = Ratio_Driven_Position, Vertical = Vertical)
         self.Sliders.append(New_Slider)
-        self.MasterUpdateList.append(New_Slider)
         return New_Slider
 
     def Create_Button(self, Pos = [0,0], Size = [20,10], Name = "Button", Ratio_Driven_Position = False):
         New_Button = _Button(Pos, Size, Name, Ratio_Driven_Position = Ratio_Driven_Position)
-        self.MasterUpdateList.append(New_Button)
         self.Buttons.append(New_Button)
         return New_Button
 
-    def Create_TextPrompt(self, Pos = [0,0], Size = [0,0], Limit = 99999999, Name = "TextBox", Ratio_Driven_Position = False, CenterText = False):
-        NewPrompt = _TextPrompt(Pos,Size,Limit,Name,Ratio_Driven_Position,CenterText)
-        self.MasterUpdateList.append(NewPrompt)
-        self.TextPrompts.append(NewPrompt)
-        return NewPrompt
+    
         
 
         

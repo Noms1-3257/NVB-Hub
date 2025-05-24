@@ -65,9 +65,9 @@ class Module:
 
         
 
-    def Update(self, Mouse):
+    def Update(self, Mouse, Keyboard = []):
 
-        self.Inputs.Update(Mouse)
+        self.Inputs.Update(Mouse, Keyboard)
 
         if not self.Slider.Value == self.Sent_Val:
             self.client.send_message("/vibrate", [self.Slider.Value,self.Slider.Value])
